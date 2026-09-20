@@ -3,23 +3,28 @@
    from the same design system as Primary Source Navigator. This file only
    holds the page structure that's specific to this site. */
 
-#app-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.85rem 1.5rem;
-  background-color: var(--header-bg);
-  color: var(--paper);
-  position: relative;
-  z-index: 46;
-}
-
-.app-header-brand {
+/* Floating pinned-card title, same treatment as Primary Source Navigator's
+   #app-title (student.css). */
+#app-title {
+  position: fixed;
+  top: 2rem;
+  left: 2rem;
+  background-color: var(--paper);
+  box-shadow: 0 2px 5px var(--shadow-panel);
+  border-radius: 3px;
+  padding: 0.5rem 0.9rem;
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 22px;
   letter-spacing: 0.01em;
+  color: var(--ink);
+  z-index: 45;
+  pointer-events: none;
+  transform: rotate(-1.4deg);
+}
+
+@media (max-width: 720px) {
+  #app-title { top: 1rem; left: 1rem; font-size: 18px; }
 }
 
 #main-content {
