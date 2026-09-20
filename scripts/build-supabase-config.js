@@ -21,7 +21,7 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   process.exit(1);
 }
 
-const outPath = path.join(__dirname, "..", "assets", "js", "supabase-config.js");
+const outPath = path.join(__dirname, "..", "public", "assets", "js", "supabase-config.js");
 
 const contents = `/* Generated at build time by scripts/build-supabase-config.js from the
    SUPABASE_URL / SUPABASE_ANON_KEY build environment variables. Do not edit

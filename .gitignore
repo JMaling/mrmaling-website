@@ -4,7 +4,10 @@
 !.env.example
 
 # Browser-side Supabase config (anon key + URL, project-specific)
-assets/js/supabase-config.js
+public/assets/js/supabase-config.js
+
+# Wrangler local state
+.wrangler/
 
 # Supabase CLI local state
 supabase/.branches/
