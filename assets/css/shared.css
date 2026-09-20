@@ -1,0 +1,692 @@
+/* Shared design tokens and primitives for the Source Explorer
+   student and teacher interfaces. Cacheable, served as a static file so
+   both pages share one HTTP cache entry instead of duplicating this CSS
+   inline. Fonts are real .woff2 files (assets/fonts/) rather than
+   embedded base64, so they get their own cache entry too. */
+
+@font-face {
+  font-family: "Averia Libre";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/averia-libre-regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Averia Libre";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/averia-libre-bold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Averia Sans Libre";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/averia-sans-libre-regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Averia Sans Libre";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/averia-sans-libre-bold.woff2") format("woff2");
+}
+
+:root {
+  color-scheme: light;
+  /* Board surface: a warmer, more orange cork than the original flat
+     #5B3F26 chocolate, with mottling and a vignette applied in
+     .corkboard-frame below so it reads as a real surface rather than paint. */
+  --cork: #6E4A27;
+  --wood-frame: #43301D;
+  --paper: #F7F2E6;
+  --paper-flat: #EFE9DA;
+  --ink: #26170D;
+  --ink-soft: #6B5847;
+  /* Between --ink and --ink-soft: card metadata (creator - date), which needs
+     to sit below the body copy without fading out the way --ink-soft did. */
+  --ink-meta: #4A3728;
+
+  /* Board surface layers, tokenised so a page can restyle the board by
+     overriding these rather than restating the whole background stack.
+     See .board-baize / .board-slate below. */
+  --board-vignette: rgba(40, 24, 10, 0.30);
+  --board-mottle-1: rgba(176, 116, 52, 0.30);
+  --board-mottle-2: rgba(150, 92, 40, 0.26);
+  --board-mottle-3: rgba(58, 35, 16, 0.34);
+  --status-neutral: #8A7A5E;
+  --status-neutral-bg: rgba(138, 122, 94, 0.16);
+  --status-good: #2E6B4F;
+  --status-good-bg: rgba(46, 107, 79, 0.14);
+  --status-warn: #A8642B;
+  --status-warn-bg: rgba(168, 100, 43, 0.16);
+  --status-bad: #A8402D;
+  --status-bad-bg: rgba(168, 64, 45, 0.14);
+  --link-disabled-bg: rgba(38, 23, 13, 0.07);
+  --focus-ring: #26170D;
+  --border-soft: rgba(38, 23, 13, 0.14);
+  --font-display: "Averia Libre", Georgia, serif;
+  --font-body: "Averia Sans Libre", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --shift-duration: 450ms;
+
+  /* ---- Three inks, not one ----
+     Every glyph in the product used to be --ink. These give links, warnings
+     and confirmations their own hand, which also makes links actually read
+     as links (they were brown-underlined-on-brown before). */
+  --ink-link: #1F3A5F;
+  --ink-red: #B23A2E;
+  --ink-green: #2E6B4F;
+
+  /* ---- Filled controls ----
+     Primary buttons and archive links were solid --wood-frame mud. */
+  --action: #24446B;
+  --action-hover: #1B3350;
+
+  /* Teacher's full-width header bar. Tracks the board variant, since it's the
+     largest text-light surface on the page and should belong to its board. */
+  --header-bg: #5C3327;
+
+  /* ---- Document-type palette ----
+     Deliberately earthier and less saturated than the relation-type colours
+     (which are teacher-authored, live in the DB, and own the graph), so the
+     two systems never read as the same language. These own tables and
+     metadata. */
+  --type-document: #4A6D8C;
+  --type-pamphlet: #A5762F;
+  --type-print: #7D5570;
+  --type-letter: #4F7D6E;
+  --type-broadside: #9C5340;
+  --type-petition: #5A5A96;
+  --type-manuscript: #8A6440;
+  --type-web-page: #3C7B87;
+  --type-map: #6A6B34;
+  --type-photograph: #566B7D;
+  /* doc_type is free text, so anything not above lands here rather than
+     producing an invalid var() name. See PSN.docTypeColorVar. */
+  --type-fallback: var(--status-neutral);
+
+  /* Paired text colours. The dot above can stay vivid because it carries no
+     information on its own, but the label beside it is 11px bold text and has
+     to clear WCAG AA (4.5:1) on --paper. Four of the hues above don't, so
+     these are darkened just far enough; the rest are identical to their dot.
+     Measured on #F7F2E6: all >= 4.6:1. */
+  --type-document-ink: #4A6D8C;
+  --type-pamphlet-ink: #8F6529;
+  --type-print-ink: #7D5570;
+  --type-letter-ink: #4C7566;
+  --type-broadside-ink: #9C5340;
+  --type-petition-ink: #5A5A96;
+  --type-manuscript-ink: #8A6440;
+  --type-web-page-ink: #3B7580;
+  --type-map-ink: #6A6B34;
+  --type-photograph-ink: #566B7D;
+  --type-fallback-ink: #6B5847;
+
+  /* ---- Shadows tinted toward the board, so paper sits in the scene
+     rather than floating on top of it. ---- */
+  --shadow-card: rgba(74, 42, 12, 0.30);
+  --shadow-panel: rgba(58, 32, 8, 0.36);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --shift-duration: 0ms; }
+}
+
+* { box-sizing: border-box; }
+
+/* Corkboard background + wood-frame border, shared verbatim by the
+   student, teacher, and Corpus Studio pages (previously duplicated in
+   student.css and teacher.css). Apply with <body class="corkboard-frame">. */
+body.corkboard-frame {
+  background-color: var(--cork);
+  background-image:
+    /* Vignette first so it paints above the mottling and the dot texture.
+       All of these sit beneath page content regardless, since this is the
+       body's own background. */
+    radial-gradient(ellipse 90% 80% at 50% 45%, transparent 45%, var(--board-vignette) 100%),
+    radial-gradient(ellipse 60% 45% at 18% 22%, var(--board-mottle-1), transparent 70%),
+    radial-gradient(ellipse 55% 50% at 82% 70%, var(--board-mottle-2), transparent 70%),
+    radial-gradient(ellipse 70% 40% at 55% 95%, var(--board-mottle-3), transparent 70%),
+    radial-gradient(rgba(0, 0, 0, 0.14) 1px, transparent 1.3px),
+    radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1.3px);
+  background-size: cover, cover, cover, cover, 9px 9px, 13px 13px;
+  background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 4px 5px;
+  background-attachment: fixed;
+}
+
+/* ---- Board variants ----
+   Each app gets its own surface so the three tools are distinguishable at a
+   glance, while cream paper and the relation palette stay identical across
+   all of them. Applied alongside .corkboard-frame on <body>:
+     (default)      student  -- cork
+     .board-baize   teacher  -- green desk blotter
+     .board-slate   Studio   -- slate, the most tool-like of the three
+   The teacher/Studio header hue tracks these, see teacher.css. */
+
+body.board-baize {
+  --cork: #40573F;
+  --wood-frame: #24372A;
+  --board-vignette: rgba(16, 30, 18, 0.32);
+  --board-mottle-1: rgba(96, 132, 88, 0.30);
+  --board-mottle-2: rgba(72, 104, 70, 0.28);
+  --board-mottle-3: rgba(24, 40, 26, 0.36);
+  --shadow-card: rgba(18, 36, 20, 0.30);
+  --shadow-panel: rgba(12, 28, 16, 0.36);
+  --header-bg: #2B4536;
+}
+
+body.board-slate {
+  --cork: #47535F;
+  --wood-frame: #2B333C;
+  --board-vignette: rgba(18, 26, 34, 0.34);
+  --board-mottle-1: rgba(104, 124, 146, 0.30);
+  --board-mottle-2: rgba(76, 94, 112, 0.28);
+  --board-mottle-3: rgba(24, 32, 40, 0.36);
+  --shadow-card: rgba(16, 26, 38, 0.30);
+  --shadow-panel: rgba(10, 20, 30, 0.36);
+  --header-bg: #303C52;
+}
+
+/* This pseudo-element only draws the wood-frame border, at a z-index above
+   ordinary page content (so the border always reads as a frame around the
+   viewport). Its own "grime" gradients used to live here too, but since
+   this element is `inset: 0` and `background-clip: border-box`, that
+   background painted across the *entire* viewport -- not just the border
+   ring -- so those dark corner spots showed up floating in front of paper
+   panels and tables everywhere on the page. They now live in the plain
+   body background above, which paints beneath all normal content. */
+body.corkboard-frame::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 44;
+  border: 18px solid var(--wood-frame);
+  box-sizing: border-box;
+}
+
+/* The native [hidden] attribute loses to any author rule that sets
+   `display` on the same element (e.g. a flex/grid layout class) once that
+   rule's selector is at least as specific - which is common, since a
+   single class already matches a single-attribute selector's specificity.
+   This keeps `hidden` authoritative everywhere in both apps. */
+[hidden] { display: none !important; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+a, button, input, select, textarea {
+  outline-offset: 2px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 200;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 0.6rem 1rem;
+  border-radius: 3px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+/* ---- Floating panel primitive (paper card look, reused on both pages) ---- */
+
+.floating-panel {
+  background-color: var(--paper);
+  box-shadow: 0 2px 5px var(--shadow-panel);
+  border-radius: 3px;
+  padding: 0.6rem 0.75rem;
+  font-size: 13px;
+  color: var(--ink);
+  position: relative;
+}
+
+.floating-panel h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  margin: 0 0 0.4rem 0;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ---- Deckle edge ----
+   Every card is torn paper rather than a cut rectangle. Eight fixed variants
+   are cycled by document id (PSN.renderDocumentCard) so neighbouring cards
+   don't share a silhouette; the jitter is deliberately small (0.4% of the
+   card's own size, under ~1.5px) so it reads as hand-cut stock, not damage.
+
+   IMPORTANT: clip-path clips the element's own box-shadow, so .node-panel
+   carries no box-shadow -- the card shadow is a drop-shadow filter on the
+   parent .node instead (student.css). Anything that adds a box-shadow back
+   to .node-panel will have it silently clipped away. */
+
+.deckle-0 { clip-path: polygon(0% 0.40%, 9.1% 0.16%, 18.2% 0.08%, 27.3% 0.05%, 36.4% 0.01%, 45.5% 0.21%, 54.5% 0.35%, 63.6% 0.21%, 72.7% 0.05%, 81.8% 0.33%, 90.9% 0.33%, 100% 0.25%, 99.77% 0%, 99.92% 9.1%, 99.96% 18.2%, 99.89% 27.3%, 99.64% 36.4%, 99.80% 45.5%, 99.81% 54.5%, 99.79% 63.6%, 99.91% 72.7%, 99.84% 81.8%, 99.98% 90.9%, 99.61% 100%, 100% 99.86%, 90.9% 99.67%, 81.8% 99.76%, 72.7% 99.86%, 63.6% 99.75%, 54.5% 99.84%, 45.5% 99.82%, 36.4% 99.67%, 27.3% 99.64%, 18.2% 99.74%, 9.1% 99.97%, 0% 99.86%, 0.26% 100%, 0.15% 90.9%, 0.08% 81.8%, 0.39% 72.7%, 0.32% 63.6%, 0.17% 54.5%, 0.20% 45.5%, 0.37% 36.4%, 0.36% 27.3%, 0.40% 18.2%, 0.21% 9.1%, 0.17% 0%); }
+
+.deckle-1 { clip-path: polygon(0% 0.15%, 9.1% 0.35%, 18.2% 0.05%, 27.3% 0.02%, 36.4% 0.01%, 45.5% 0.31%, 54.5% 0.28%, 63.6% 0.21%, 72.7% 0.00%, 81.8% 0.21%, 90.9% 0.28%, 100% 0.18%, 99.90% 0%, 99.66% 9.1%, 99.75% 18.2%, 99.75% 27.3%, 99.80% 36.4%, 100.00% 45.5%, 99.71% 54.5%, 99.76% 63.6%, 99.62% 72.7%, 99.62% 81.8%, 99.88% 90.9%, 99.66% 100%, 100% 99.69%, 90.9% 99.64%, 81.8% 99.78%, 72.7% 99.85%, 63.6% 99.65%, 54.5% 99.99%, 45.5% 99.61%, 36.4% 99.70%, 27.3% 99.63%, 18.2% 99.76%, 9.1% 99.99%, 0% 99.63%, 0.40% 100%, 0.35% 90.9%, 0.24% 81.8%, 0.19% 72.7%, 0.35% 63.6%, 0.34% 54.5%, 0.15% 45.5%, 0.31% 36.4%, 0.18% 27.3%, 0.23% 18.2%, 0.18% 9.1%, 0.39% 0%); }
+
+.deckle-2 { clip-path: polygon(0% 0.31%, 9.1% 0.07%, 18.2% 0.25%, 27.3% 0.03%, 36.4% 0.39%, 45.5% 0.08%, 54.5% 0.25%, 63.6% 0.31%, 72.7% 0.18%, 81.8% 0.30%, 90.9% 0.30%, 100% 0.16%, 99.61% 0%, 99.84% 9.1%, 99.95% 18.2%, 99.88% 27.3%, 99.87% 36.4%, 99.69% 45.5%, 99.91% 54.5%, 99.66% 63.6%, 99.79% 72.7%, 99.84% 81.8%, 99.60% 90.9%, 99.70% 100%, 100% 99.91%, 90.9% 99.97%, 81.8% 99.94%, 72.7% 99.92%, 63.6% 99.84%, 54.5% 99.80%, 45.5% 99.61%, 36.4% 99.81%, 27.3% 99.86%, 18.2% 99.96%, 9.1% 99.84%, 0% 99.95%, 0.16% 100%, 0.20% 90.9%, 0.22% 81.8%, 0.31% 72.7%, 0.21% 63.6%, 0.07% 54.5%, 0.12% 45.5%, 0.38% 36.4%, 0.21% 27.3%, 0.21% 18.2%, 0.28% 9.1%, 0.25% 0%); }
+
+.deckle-3 { clip-path: polygon(0% 0.34%, 9.1% 0.18%, 18.2% 0.20%, 27.3% 0.34%, 36.4% 0.07%, 45.5% 0.05%, 54.5% 0.07%, 63.6% 0.39%, 72.7% 0.36%, 81.8% 0.05%, 90.9% 0.18%, 100% 0.19%, 99.89% 0%, 99.70% 9.1%, 99.75% 18.2%, 99.70% 27.3%, 99.84% 36.4%, 99.68% 45.5%, 99.61% 54.5%, 99.82% 63.6%, 99.84% 72.7%, 99.70% 81.8%, 99.90% 90.9%, 99.76% 100%, 100% 99.85%, 90.9% 99.86%, 81.8% 99.84%, 72.7% 99.61%, 63.6% 99.64%, 54.5% 99.92%, 45.5% 99.76%, 36.4% 99.82%, 27.3% 99.71%, 18.2% 99.89%, 9.1% 99.62%, 0% 99.81%, 0.35% 100%, 0.10% 90.9%, 0.23% 81.8%, 0.33% 72.7%, 0.06% 63.6%, 0.12% 54.5%, 0.07% 45.5%, 0.09% 36.4%, 0.21% 27.3%, 0.31% 18.2%, 0.16% 9.1%, 0.15% 0%); }
+
+.deckle-4 { clip-path: polygon(0% 0.35%, 9.1% 0.02%, 18.2% 0.16%, 27.3% 0.16%, 36.4% 0.03%, 45.5% 0.31%, 54.5% 0.14%, 63.6% 0.02%, 72.7% 0.36%, 81.8% 0.18%, 90.9% 0.39%, 100% 0.28%, 99.61% 0%, 99.82% 9.1%, 99.72% 18.2%, 99.78% 27.3%, 99.90% 36.4%, 99.75% 45.5%, 99.66% 54.5%, 99.71% 63.6%, 99.85% 72.7%, 99.62% 81.8%, 99.70% 90.9%, 99.99% 100%, 100% 99.90%, 90.9% 99.70%, 81.8% 99.93%, 72.7% 99.72%, 63.6% 99.81%, 54.5% 99.65%, 45.5% 99.86%, 36.4% 99.80%, 27.3% 99.68%, 18.2% 99.67%, 9.1% 99.95%, 0% 99.97%, 0.10% 100%, 0.01% 90.9%, 0.28% 81.8%, 0.26% 72.7%, 0.38% 63.6%, 0.07% 54.5%, 0.06% 45.5%, 0.15% 36.4%, 0.29% 27.3%, 0.03% 18.2%, 0.15% 9.1%, 0.28% 0%); }
+
+.deckle-5 { clip-path: polygon(0% 0.08%, 9.1% 0.16%, 18.2% 0.14%, 27.3% 0.30%, 36.4% 0.00%, 45.5% 0.13%, 54.5% 0.06%, 63.6% 0.20%, 72.7% 0.26%, 81.8% 0.13%, 90.9% 0.37%, 100% 0.03%, 99.88% 0%, 99.93% 9.1%, 99.86% 18.2%, 99.77% 27.3%, 99.61% 36.4%, 99.76% 45.5%, 99.68% 54.5%, 99.98% 63.6%, 99.67% 72.7%, 99.62% 81.8%, 99.95% 90.9%, 99.60% 100%, 100% 99.75%, 90.9% 99.98%, 81.8% 99.78%, 72.7% 99.80%, 63.6% 99.71%, 54.5% 99.82%, 45.5% 99.73%, 36.4% 99.97%, 27.3% 99.72%, 18.2% 99.92%, 9.1% 99.89%, 0% 99.89%, 0.06% 100%, 0.23% 90.9%, 0.06% 81.8%, 0.25% 72.7%, 0.08% 63.6%, 0.39% 54.5%, 0.39% 45.5%, 0.05% 36.4%, 0.04% 27.3%, 0.38% 18.2%, 0.34% 9.1%, 0.06% 0%); }
+
+.deckle-6 { clip-path: polygon(0% 0.32%, 9.1% 0.18%, 18.2% 0.31%, 27.3% 0.02%, 36.4% 0.08%, 45.5% 0.22%, 54.5% 0.12%, 63.6% 0.09%, 72.7% 0.06%, 81.8% 0.10%, 90.9% 0.18%, 100% 0.21%, 99.71% 0%, 99.95% 9.1%, 99.75% 18.2%, 99.75% 27.3%, 99.97% 36.4%, 99.90% 45.5%, 99.73% 54.5%, 99.69% 63.6%, 99.80% 72.7%, 99.70% 81.8%, 99.82% 90.9%, 99.97% 100%, 100% 99.72%, 90.9% 99.80%, 81.8% 99.86%, 72.7% 99.88%, 63.6% 99.73%, 54.5% 99.74%, 45.5% 99.86%, 36.4% 99.84%, 27.3% 99.95%, 18.2% 99.69%, 9.1% 99.94%, 0% 99.61%, 0.35% 100%, 0.12% 90.9%, 0.11% 81.8%, 0.32% 72.7%, 0.20% 63.6%, 0.06% 54.5%, 0.05% 45.5%, 0.04% 36.4%, 0.11% 27.3%, 0.13% 18.2%, 0.30% 9.1%, 0.20% 0%); }
+
+.deckle-7 { clip-path: polygon(0% 0.10%, 9.1% 0.16%, 18.2% 0.35%, 27.3% 0.23%, 36.4% 0.16%, 45.5% 0.33%, 54.5% 0.02%, 63.6% 0.02%, 72.7% 0.37%, 81.8% 0.06%, 90.9% 0.07%, 100% 0.07%, 99.97% 0%, 99.73% 9.1%, 99.78% 18.2%, 99.93% 27.3%, 99.86% 36.4%, 99.78% 45.5%, 99.99% 54.5%, 99.67% 63.6%, 99.77% 72.7%, 99.89% 81.8%, 100.00% 90.9%, 99.72% 100%, 100% 99.85%, 90.9% 99.66%, 81.8% 99.93%, 72.7% 99.86%, 63.6% 99.91%, 54.5% 99.78%, 45.5% 99.70%, 36.4% 99.88%, 27.3% 99.70%, 18.2% 99.65%, 9.1% 99.65%, 0% 99.63%, 0.05% 100%, 0.12% 90.9%, 0.00% 81.8%, 0.01% 72.7%, 0.15% 63.6%, 0.12% 54.5%, 0.26% 45.5%, 0.01% 36.4%, 0.37% 27.3%, 0.35% 18.2%, 0.03% 9.1%, 0.04% 0%); }
+
+/* ---- Buttons ---- */
+
+.btn {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  background-color: var(--paper);
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
+  border-radius: 3px;
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: 40px;
+}
+
+.btn:hover:not(:disabled) { background-color: #efe7d4; }
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.btn-primary {
+  color: var(--paper);
+  background-color: var(--action);
+  border-color: var(--action);
+}
+
+.btn-primary:hover:not(:disabled) { background-color: var(--action-hover); }
+
+.btn-danger {
+  color: var(--ink-red);
+  border-color: var(--ink-red);
+}
+
+.btn-danger:hover:not(:disabled) { background-color: var(--status-bad-bg); }
+
+.btn-quiet {
+  background: none;
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.btn-quiet:hover:not(:disabled) { background-color: var(--status-neutral-bg); }
+
+/* ---- Badges / status chips ---- */
+
+.badge {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--status-neutral);
+  background: var(--status-neutral-bg);
+  border: 1px solid var(--status-neutral);
+  border-radius: 3px;
+  padding: 0.1rem 0.35rem;
+  margin-left: 0.3rem;
+  vertical-align: middle;
+}
+
+.badge-good { color: var(--ink-green); background: rgba(46, 107, 79, 0.16); border-color: var(--ink-green); }
+.badge-warn { color: var(--status-warn); background: var(--status-warn-bg); border-color: var(--status-warn); }
+.badge-bad { color: var(--ink-red); background: rgba(178, 58, 46, 0.14); border-color: var(--ink-red); }
+
+/* ---- Document-type dot, used anywhere a doc_type is shown (student list
+   view, teacher corpus table, card type tag). The hue arrives as --type-c
+   set inline by whichever renderer knows the document's type. ---- */
+
+.type-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--type-c, var(--type-fallback));
+  flex: none;
+  vertical-align: middle;
+}
+
+/* The label takes the darkened --type-ink-c, not the dot's --type-c: at 11px
+   bold, four of the dot hues fall below AA on cream. Both are set inline by
+   PSN.typeLabelHtml. */
+.type-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--type-ink-c, var(--type-fallback-ink));
+  font-weight: 700;
+}
+
+/* ---- Links ---- */
+
+.landing-link,
+.link-disabled {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 13px;
+  border-radius: 3px;
+  padding: 0.35rem 0.7rem;
+  text-decoration: none;
+}
+
+.landing-link {
+  color: var(--paper);
+  background: var(--action);
+  font-weight: 700;
+}
+
+.landing-link:hover { background: var(--action-hover); }
+
+.link-disabled {
+  color: var(--ink-soft);
+  background: var(--link-disabled-bg);
+}
+
+/* ---- Rich text in student-facing descriptions ----
+   Authors write **bold**, *italic* and ==key term== in the description
+   field; PSN.renderRichText() escapes first and then emits only these three
+   tags. The key-term mark is drawn as a marker underline rather than a
+   highlight fill, so the colour sits under the baseline and never reduces
+   contrast on the words themselves. ---- */
+
+.rich-text strong { font-weight: 700; color: inherit; }
+.rich-text em { font-style: italic; color: inherit; }
+
+.rich-text mark {
+  background: none;
+  color: inherit;
+  font-weight: 700;
+  box-shadow: inset 0 -0.42em 0 rgba(224, 164, 34, 0.42);
+  border-radius: 2px;
+  padding: 0 0.06em;
+}
+
+/* ---- Generic states ---- */
+
+/* These four are the moments where the screen is otherwise empty, so they
+   carry more colour than anything else -- but all of it sits on a border,
+   never behind the text. */
+
+.empty-state {
+  font-family: var(--font-body);
+  padding: 1.75rem 2rem;
+  text-align: center;
+  color: var(--ink);
+  border: 2px dashed rgba(46, 111, 168, 0.4);
+  border-radius: 4px;
+}
+
+.load-error {
+  font-family: var(--font-body);
+  background: var(--paper);
+  border: 1px solid var(--border-soft);
+  border-left: 5px solid var(--ink-red);
+  color: var(--ink);
+  padding: 1rem;
+  border-radius: 3px;
+  margin: 1.25rem;
+}
+
+.spinner-msg {
+  font-family: var(--font-body);
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.offline-banner {
+  background: var(--paper);
+  border: 1px solid var(--border-soft);
+  border-left: 5px solid var(--status-warn);
+  color: var(--ink);
+  border-radius: 3px;
+  padding: 0.65rem 1rem;
+  font-size: 13px;
+  font-family: var(--font-body);
+}
+
+/* ---- Data table primitive (reused by teacher corpus/set tables and the
+   student list view) ---- */
+
+.table-wrap {
+  overflow-x: auto;
+  background-color: var(--paper);
+  border-radius: 3px;
+  box-shadow: 0 3px 6px var(--shadow-panel);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: top;
+  overflow-wrap: break-word;
+}
+
+.data-table th {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.data-table thead tr:first-child th { border-bottom: none; }
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:hover { background-color: rgba(138, 122, 94, 0.08); }
+
+.sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  padding: 0;
+  cursor: pointer;
+}
+
+.sort-indicator {
+  color: var(--status-neutral);
+  font-family: var(--font-body);
+  font-size: 12px;
+}
+
+.sort-button.is-active .sort-indicator { color: var(--ink); }
+
+.column-filter {
+  width: 100%;
+  min-width: 110px;
+  border: 1px solid rgba(138, 122, 94, 0.55);
+  border-radius: 3px;
+  background: rgba(138, 122, 94, 0.08);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 12px;
+  padding: 0.32rem 0.45rem;
+}
+
+.column-filter::placeholder { color: var(--ink-soft); opacity: 0.78; }
+
+.list-empty {
+  color: var(--ink-soft);
+  font-style: italic;
+  text-align: center !important;
+  padding: 1.25rem !important;
+}
+
+/* ---- Form primitives (teacher forms; kept plain/semantic) ---- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.9rem;
+}
+
+.field label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.field input[type="text"],
+.field input[type="search"],
+.field input[type="email"],
+.field input[type="password"],
+.field input[type="date"],
+.field input[type="url"],
+.field select,
+.field textarea {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--border-soft);
+  border-radius: 3px;
+  padding: 0.55rem 0.65rem;
+  min-height: 40px;
+}
+
+/* File inputs can't be restyled directly, but ::file-selector-button lets
+   the "choose file" control itself pick up the same raised-paper look as
+   every other button. */
+.field input[type="file"] {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink);
+  text-transform: capitalize;
+}
+
+.field input[type="file"]::file-selector-button {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  background-color: var(--paper);
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
+  border-radius: 3px;
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+  margin-right: 0.9rem;
+}
+
+.field input[type="file"]::file-selector-button:hover {
+  background-color: #efe7d4;
+}
+
+.field-hint {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+/* Inline syntax in a field hint (e.g. the description field's **bold**
+   markers in Corpus Studio) reads as something you type, not prose. */
+.field-hint code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: var(--ink);
+  background: var(--status-neutral-bg);
+  border-radius: 3px;
+  padding: 0.05rem 0.25rem;
+}
+
+.field-error {
+  font-size: 12px;
+  color: var(--status-bad);
+}
+
+/* ---- Accessible tabs ---- */
+
+.tabs {
+  display: flex;
+  gap: 0.3rem;
+  border-bottom: 1px solid var(--border-soft);
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink-soft);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 0.7rem 1rem;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.tab-button[aria-selected="true"] {
+  color: var(--ink);
+  border-bottom-color: var(--wood-frame);
+}
+
+.tab-panel { padding-top: 1.25rem; }
+.tab-panel[hidden] { display: none; }

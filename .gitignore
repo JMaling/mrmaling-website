@@ -1,0 +1,18 @@
+# Secrets / local env
+.env
+.env.*
+!.env.example
+
+# Browser-side Supabase config (anon key + URL, project-specific)
+assets/js/supabase-config.js
+
+# Supabase CLI local state
+supabase/.branches/
+supabase/.temp/
+supabase/snippets/
+
+# Local tool config (may contain permission history with embedded secrets)
+.claude/
+
+# Editor/OS cruft
+.DS_Store

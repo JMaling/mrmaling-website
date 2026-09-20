@@ -1,0 +1,29 @@
+/* Site-specific layout for mrmaling.com. Design tokens, fonts, and shared
+   primitives (buttons, badges, tables, forms) live in shared.css, copied
+   from the same design system as Primary Source Navigator. This file only
+   holds the page structure that's specific to this site. */
+
+#app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.5rem;
+  background-color: var(--header-bg);
+  color: var(--paper);
+  position: relative;
+  z-index: 46;
+}
+
+.app-header-brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.01em;
+}
+
+#main-content {
+  position: relative;
+  z-index: 1;
+  padding: 2.5rem 1.5rem;
+}
