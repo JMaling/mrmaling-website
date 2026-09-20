@@ -1,0 +1,221 @@
+/* Native Cultures GRAPES Resource Library. Page-specific layout - reuses
+   design tokens, fonts, and primitives (--ink-link, .landing-link,
+   --status-neutral, the --type-* palette) from shared.css rather than
+   inventing a parallel set. */
+
+.resource-page {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 6rem auto 3rem;
+  background: var(--paper);
+  border-radius: 6px;
+  box-shadow: 0 3px 8px var(--shadow-panel);
+  padding: 2.25rem 2.5rem 2.5rem;
+}
+
+.back-link {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink-link);
+  text-decoration: none;
+  margin-bottom: 0.75rem;
+}
+.back-link:hover { text-decoration: underline; }
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.4rem;
+}
+
+.resource-page h1 {
+  font-family: var(--font-display);
+  font-size: 2.1rem;
+  line-height: 1.1;
+  margin: 0.2rem 0 0.6rem;
+  color: var(--ink);
+}
+
+.page-subtitle {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink-soft);
+  max-width: 700px;
+  margin: 0 0 1.5rem;
+}
+
+.start-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--paper-flat);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  padding: 1rem 1.25rem;
+  margin: 0 0 1.25rem;
+}
+.start-box h2 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  margin: 0 0 0.2rem;
+  color: var(--ink);
+}
+.start-box p {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.callout {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--border-soft);
+  border-left: 5px solid var(--status-neutral);
+  border-radius: 0 3px 3px 0;
+  padding: 0.65rem 1rem;
+  margin: 0 0 1.75rem;
+}
+
+.grapes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.grapes-card {
+  border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--type-c, var(--type-fallback));
+  border-radius: 4px;
+  background: var(--paper);
+  box-shadow: 0 2px 5px var(--shadow-card);
+  overflow: hidden;
+}
+
+.grapes-card-head {
+  padding: 0.85rem 1rem 0.7rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+.grapes-card-head h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  margin: 0 0 0.4rem;
+  color: var(--type-ink-c, var(--type-fallback-ink));
+}
+.grapes-card-head .definition {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0 0 0.4rem;
+  color: var(--ink);
+}
+.grapes-card-head .guide {
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  line-height: 1.4;
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.grapes-card-body { padding: 0.2rem 1rem 0.85rem; }
+
+.resource {
+  padding: 0.6rem 0 0.65rem;
+  border-top: 1px solid var(--border-soft);
+}
+.resource:first-child { border-top: 0; }
+.resource a {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink-link);
+}
+.resource p {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin: 0.25rem 0 0;
+}
+
+.resource-page footer {
+  margin-top: 1.75rem;
+  border-top: 1px solid var(--border-soft);
+  padding-top: 1rem;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+/* Index page only: GRAPES lens legend + region link cards */
+.framework-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin: 0 0 1.75rem;
+}
+.framework-grid > div {
+  background: var(--paper-flat);
+  border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--type-c, var(--type-fallback));
+  border-radius: 4px;
+  padding: 0.75rem 0.9rem;
+}
+.framework-grid strong {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--type-ink-c, var(--type-fallback-ink));
+}
+.framework-grid p {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin: 0.3rem 0 0;
+}
+
+.region-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  margin-top: 1.5rem;
+}
+.region-link {
+  display: block;
+  background: var(--paper);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  box-shadow: 0 2px 5px var(--shadow-card);
+  padding: 1rem 1.1rem;
+  text-decoration: none;
+  color: var(--ink);
+}
+.region-link:hover { background: #efe7d4; }
+.region-link strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 17px;
+  margin-bottom: 0.2rem;
+  color: var(--ink);
+}
+.region-link span {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 720px) {
+  .resource-page { margin: 5rem 1rem 2rem; padding: 1.5rem 1.25rem; }
+  .grapes-grid, .framework-grid, .region-grid { grid-template-columns: 1fr; }
+  .resource-page h1 { font-size: 1.7rem; }
+}

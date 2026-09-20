@@ -4,7 +4,9 @@
    holds the page structure that's specific to this site. */
 
 /* Floating pinned-card title, same treatment as Primary Source Navigator's
-   #app-title (student.css). */
+   #app-title (student.css). Unlike PSN's (a label over an interactive
+   canvas, so it deliberately ignored clicks), this is a real link back
+   to the homepage - this is a multi-page site, not a single-page app. */
 #app-title {
   position: fixed;
   top: 2rem;
@@ -18,8 +20,8 @@
   font-size: 22px;
   letter-spacing: 0.01em;
   color: var(--ink);
+  text-decoration: none;
   z-index: 45;
-  pointer-events: none;
   transform: rotate(-1.4deg);
 }
 
@@ -31,4 +33,14 @@
   position: relative;
   z-index: 1;
   padding: 2.5rem 1.5rem;
+}
+
+.home-resources {
+  max-width: 420px;
+  margin: 6rem auto 0;
+}
+
+.home-resources .landing-link {
+  display: block;
+  text-align: center;
 }
