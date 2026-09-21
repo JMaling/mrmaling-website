@@ -144,6 +144,44 @@
   color: var(--ink-soft);
 }
 
+/* Source excerpt pages: a curated pre-contact excerpt of one section of a
+   larger external page, so a resource link lands students on exactly the
+   assigned material instead of a multi-topic hub page (which may also
+   contain later, post-contact history the assignment asks them to skip). */
+.source-text h2 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  margin: 1.5rem 0 0.5rem;
+  color: var(--ink);
+}
+.source-text h2:first-child { margin-top: 0; }
+.source-text p {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink);
+  margin: 0 0 1rem;
+}
+.source-text ol {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin: 0 0 1rem;
+  padding-left: 1.4rem;
+}
+
+.source-citation {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--ink-soft);
+  border-top: 1px solid var(--border-soft);
+  margin-top: 1.75rem;
+  padding-top: 1rem;
+}
+.source-citation a { color: var(--ink-link); font-style: normal; }
+
 /* Index page only: region link cards */
 .region-grid {
   display: grid;

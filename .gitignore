@@ -14,8 +14,10 @@ supabase/.branches/
 supabase/.temp/
 supabase/snippets/
 
-# Local tool config (may contain permission history with embedded secrets)
-.claude/
+# Local tool config (may contain permission history with embedded secrets),
+# except project skills, which are meant to be shared/version-controlled
+.claude/*
+!.claude/skills/
 
 # Editor/OS cruft
 .DS_Store
