@@ -1,8 +1,11 @@
 /* Early U.S. History Native Cultures Presentation. Page-specific layout -
-   reuses design tokens, fonts, and primitives (--ink-link, .landing-link,
-   --status-neutral, the --type-* palette) from shared.css rather than
+   reuses design tokens, fonts, and primitives from shared.css rather than
    inventing a parallel set. */
 
+/* ---- Long-form reading pages (source excerpts) ----
+   These stay a single paper sheet, not a scatter of pinned cards - a
+   multi-paragraph reading is meant to be read start to finish, and
+   torn, tilted cards would fight that instead of helping it. */
 .resource-page {
   position: relative;
   z-index: 1;
@@ -35,7 +38,7 @@
   margin-bottom: 0.4rem;
 }
 
-.resource-page h1 {
+.resource-page h1, .board-panel h1 {
   font-family: var(--font-display);
   font-size: 2.1rem;
   line-height: 1.1;
@@ -47,101 +50,8 @@
   font-family: var(--font-body);
   font-size: 1rem;
   color: var(--ink-soft);
-  max-width: 700px;
-  margin: 0 0 1.5rem;
-}
-
-.start-box {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  background: var(--paper-flat);
-  border: 1px solid var(--border-soft);
-  border-radius: 4px;
-  padding: 1rem 1.25rem;
-  margin: 0 0 1.25rem;
-}
-.start-box h2 {
-  font-family: var(--font-display);
-  font-size: 15px;
+  max-width: 640px;
   margin: 0 0 0.2rem;
-  color: var(--ink);
-}
-.start-box p {
-  font-family: var(--font-body);
-  font-size: 13px;
-  color: var(--ink-soft);
-  margin: 0;
-}
-
-.callout {
-  font-family: var(--font-body);
-  font-size: 13px;
-  color: var(--ink);
-  background: var(--paper);
-  border: 1px solid var(--border-soft);
-  border-left: 5px solid var(--status-neutral);
-  border-radius: 0 3px 3px 0;
-  padding: 0.65rem 1rem;
-  margin: 0 0 1.75rem;
-}
-
-.grapes-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.grapes-card {
-  border: 1px solid var(--border-soft);
-  border-left: 4px solid var(--type-c, var(--type-fallback));
-  border-radius: 4px;
-  background: var(--paper);
-  box-shadow: 0 2px 5px var(--shadow-card);
-  overflow: hidden;
-}
-
-.grapes-card-head {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border-soft);
-}
-.grapes-card-head h2 {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 15px;
-  margin: 0;
-  color: var(--type-ink-c, var(--type-fallback-ink));
-}
-
-.grapes-card-body { padding: 0.2rem 1rem 0.85rem; }
-
-.resource {
-  padding: 0.6rem 0 0.65rem;
-  border-top: 1px solid var(--border-soft);
-}
-.resource:first-child { border-top: 0; }
-.resource a {
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 13px;
-  color: var(--ink-link);
-}
-.resource p {
-  font-family: var(--font-body);
-  font-size: 12px;
-  color: var(--ink-soft);
-  margin: 0.25rem 0 0;
-}
-
-.resource-page footer {
-  margin-top: 1.75rem;
-  border-top: 1px solid var(--border-soft);
-  padding-top: 1rem;
-  font-family: var(--font-body);
-  font-size: 12px;
-  color: var(--ink-soft);
 }
 
 /* Source excerpt pages: a curated pre-contact excerpt of one section of a
@@ -182,83 +92,118 @@
 }
 .source-citation a { color: var(--ink-link); font-style: normal; }
 
-/* Index page only: region cards - each one stands in for a whole page, so
-   it gets PSN's document-card treatment (torn deckle edge, slight tilt,
-   drop-shadow that follows the torn silhouette) plus its floating-panel
-   pushpin (the small SVG badge PSN pins #app-title/#legend/#progress-panel
-   with). PSN keeps those two treatments on separate kinds of element; here
-   they're combined onto one card.
+/* ---- Pinned board-card system ----
+   Index and region-overview pages drop the single paper-sheet layout
+   entirely: every piece of content - the title, the callout, the "start
+   here" box, each region/category - is pinned straight to the corkboard
+   as its own card, the way notes and sources actually sit on a board.
+   Base .board-card/.board-pin/.board-panel primitives live in site.css
+   (it loads on every page, including the homepage's #app-title pin);
+   what follows here is this page family's specific card variants. */
 
-   Structure: .region-card (the <a>, unclipped - carries rotation, shadow,
-   and the hover/click transitions) > .region-pin (sibling, so the deckle
-   clip-path on .region-panel below can't cut it off) + .region-panel (the
-   paper surface, deckle-N clipped). Rotation lives only on .region-card;
-   its children inherit that rotated coordinate space for free, the same
-   way a real pin holds a whole tilted card as one rigid piece. */
-.region-grid {
+/* Page scaffold: everything sits directly on the corkboard now, so this
+   just centers the stack of cards and clears the fixed #app-title. */
+.board-page {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 7rem auto 3rem;
+  padding: 0 1.5rem;
+}
+
+.title-card { max-width: 620px; margin: 0 auto 2rem; }
+.title-card .board-panel { padding: 1.65rem 1.9rem 1.85rem; }
+
+.callout-card { max-width: 560px; margin: 0 auto 2rem; }
+.callout-card .board-panel {
+  padding: 0.9rem 1.15rem;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.start-card { max-width: 460px; margin: 0 auto 2rem; }
+.start-card .board-panel { padding: 1.1rem 1.3rem 1.3rem; text-align: center; }
+.start-card h2 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  margin: 0 0 0.3rem;
+  color: var(--ink);
+}
+.start-card p {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0 0 0.8rem;
+}
+
+.region-grid, .grapes-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.75rem 1.5rem;
-  margin-top: 2.25rem;
-  padding-top: 0.6rem;
+  gap: 1.9rem 1.6rem;
+  margin: 0 auto;
+  padding: 0.5rem 0 1rem;
 }
 
-.region-card {
-  position: relative;
-  display: block;
-  text-decoration: none;
-  color: inherit;
-  transform: rotate(var(--card-rot, 0deg));
-  transform-origin: top center;
-  filter: drop-shadow(0 2px 4px var(--shadow-card));
-  transition: transform 0.18s ease, filter 0.18s ease;
-}
-
-.region-card:hover {
-  z-index: 2;
-  transform: rotate(calc(var(--card-rot, 0deg) * 0.35)) scale(1.025);
-  filter: drop-shadow(0 5px 9px var(--shadow-card));
-}
-
-.region-card:active {
-  transform: rotate(var(--card-rot, 0deg)) scale(0.965);
-  filter: drop-shadow(0 1px 2px var(--shadow-card));
-}
-
-.region-pin {
-  position: absolute;
-  top: -9px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  pointer-events: none;
-  line-height: 0;
-}
-
-.region-panel {
-  display: block;
-  background-color: var(--paper);
-  background-image: radial-gradient(ellipse 140px 100px at var(--wear-x, 70%) var(--wear-y, 20%),
-    rgba(180, 140, 90, 0.08) 0%, transparent 70%);
-  border-radius: 3px;
+.region-card .board-panel {
   padding: 1.15rem 1.25rem 1.3rem;
 }
-
-.region-panel strong {
+.region-card .board-panel strong {
   display: block;
   font-family: var(--font-display);
   font-size: 17px;
   margin-bottom: 0.3rem;
   color: var(--ink);
 }
-.region-panel span {
+.region-card .board-panel span {
   font-family: var(--font-body);
   font-size: 12.5px;
   color: var(--ink-soft);
 }
 
+.grapes-card .board-panel { overflow: hidden; }
+
+.grapes-card-head {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-soft);
+  border-left: 4px solid var(--type-c, var(--type-fallback));
+}
+.grapes-card-head h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  margin: 0;
+  color: var(--type-ink-c, var(--type-fallback-ink));
+}
+
+.grapes-card-body {
+  padding: 0.2rem 1rem 0.85rem;
+  border-left: 4px solid var(--type-c, var(--type-fallback));
+  user-select: text;
+}
+
+.resource {
+  padding: 0.6rem 0 0.65rem;
+  border-top: 1px solid var(--border-soft);
+}
+.resource:first-child { border-top: 0; }
+.resource a {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink-link);
+}
+.resource p {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin: 0.25rem 0 0;
+}
+
 @media (max-width: 720px) {
   .resource-page { margin: 5rem 1rem 2rem; padding: 1.5rem 1.25rem; }
-  .grapes-grid, .region-grid { grid-template-columns: 1fr; }
-  .resource-page h1 { font-size: 1.7rem; }
+  .board-page { margin: 6rem auto 2rem; }
+  .resource-page h1, .board-panel h1 { font-size: 1.7rem; }
+  .region-grid, .grapes-grid { grid-template-columns: 1fr; }
 }

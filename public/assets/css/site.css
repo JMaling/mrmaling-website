@@ -1,10 +1,80 @@
 /* Site-specific layout for mrmaling.com. Design tokens, fonts, and shared
    primitives (buttons, badges, tables, forms) live in shared.css, copied
-   from the same design system as Primary Source Navigator. This file only
-   holds the page structure that's specific to this site. */
+   from the same design system as Primary Source Navigator. This file holds
+   page structure specific to this site, plus the pinned board-card system
+   below - it needs to load on every page (including the homepage, for
+   #app-title's own pin), unlike resources.css which only the resource
+   library pages load. */
 
-/* Floating pinned-card title, same treatment as Primary Source Navigator's
-   #app-title (student.css). Unlike PSN's (a label over an interactive
+/* ---- Pinned board-card primitives ----
+   Borrowed from Primary Source Navigator: a torn deckle edge (the
+   .deckle-N clip-paths in shared.css), a slight per-card tilt, and a
+   drop-shadow that follows the torn silhouette rather than the box - plus
+   a pushpin badge, the same SVG radial-gradient technique PSN uses to pin
+   its floating panels (#app-title/#legend/#progress-panel), in PSN's
+   actual vivid five-colour relation-type palette (#D6483A red, #E0A422
+   amber, #34966B green, #2E7BC6 blue, #8C55C4 purple) rather than the
+   muted --type-* document-type palette, which is a deliberately quieter,
+   separate system in PSN.
+
+   Structure: .board-card (the <a> or <div> - carries rotation, shadow,
+   and, only when it's a real link, hover/active transitions) > .board-pin
+   (sibling, so a deckle clip-path on a .board-panel below can't cut it
+   off) + .board-panel (the paper surface, usually deckle-N clipped).
+   Rotation lives only on .board-card; children inherit that rotated
+   coordinate space for free, the same way a real pin holds a whole
+   tilted card as one rigid piece.
+
+   Card faces are non-selectable (user-select: none) by default on
+   .board-panel - they read as board objects, not article text; pages
+   that need real selectable text inside a card (resource links, etc.)
+   opt back in locally. */
+.board-card {
+  position: relative;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transform: rotate(var(--card-rot, 0deg));
+  transform-origin: top center;
+  filter: drop-shadow(0 2px 4px var(--shadow-card));
+}
+
+a.board-card {
+  cursor: pointer;
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+a.board-card:hover {
+  z-index: 2;
+  transform: rotate(calc(var(--card-rot, 0deg) * 0.35)) scale(1.025);
+  filter: drop-shadow(0 5px 9px var(--shadow-card));
+}
+a.board-card:active {
+  transform: rotate(var(--card-rot, 0deg)) scale(0.965);
+  filter: drop-shadow(0 1px 2px var(--shadow-card));
+}
+
+.board-pin {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  pointer-events: none;
+  line-height: 0;
+}
+
+.board-panel {
+  display: block;
+  background-color: var(--paper);
+  background-image: radial-gradient(ellipse 140px 100px at var(--wear-x, 70%) var(--wear-y, 20%),
+    rgba(180, 140, 90, 0.08) 0%, transparent 70%);
+  border-radius: 3px;
+  user-select: none;
+}
+
+/* Floating pinned title, same treatment as Primary Source Navigator's
+   #app-title (student.css), pin included - PSN pins this same panel with
+   its vivid red (#D6483A). Unlike PSN's (a label over an interactive
    canvas, so it deliberately ignored clicks), this is a real link back
    to the homepage - this is a multi-page site, not a single-page app. */
 #app-title {
@@ -35,12 +105,5 @@
   padding: 2.5rem 1.5rem;
 }
 
-.home-resources {
-  max-width: 420px;
-  margin: 6rem auto 0;
-}
-
-.home-resources .landing-link {
-  display: block;
-  text-align: center;
-}
+.home-resources { max-width: 420px; margin: 6rem auto 0; }
+.home-resources .landing-link { display: block; text-align: center; }
