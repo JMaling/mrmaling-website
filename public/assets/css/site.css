@@ -53,10 +53,14 @@ a.board-card:active {
   filter: drop-shadow(0 1px 2px var(--shadow-card));
 }
 
+/* Sits lower than a literal edge-pin would (more of the head resting on
+   the paper, like it's actually stuck through it) - and --pin-x/--pin-y
+   (set per instance) nudge it a few px off-center in either direction so
+   a grid of cards doesn't read as machine-stamped identical pins. */
 .board-pin {
   position: absolute;
-  top: -9px;
-  left: 50%;
+  top: calc(-2px + var(--pin-y, 0px));
+  left: calc(50% + var(--pin-x, 0px));
   transform: translateX(-50%);
   z-index: 2;
   pointer-events: none;
