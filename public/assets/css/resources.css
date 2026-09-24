@@ -135,7 +135,7 @@
    pick up that shared styling) - kept as distinct names here only
    because "region" is more specific than "link-card" for anything
    region-page-only (e.g. the media query below). */
-.region-grid, .grapes-grid {
+.region-grid, .grapes-grid, .resource-list-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.9rem 1.6rem;
@@ -182,8 +182,148 @@
   margin: 0.25rem 0 0;
 }
 
+/* Flat resource-list cards: one external link per card (title, sourcing
+   org, and a short description), no GRAPES/region grouping - used by
+   pages that are just a curated reading list rather than a categorized
+   library. Text stays selectable (unlike the default board-panel) since
+   the description is real content, not a board label. Colored left-edge
+   accent works the same way as .grapes-card-head/-body above: the color
+   lives on an inner div (.resource-list-body), not the deckle-clipped
+   .board-panel itself, so the straight border isn't cut up by the torn
+   edge. Panel padding moves to that inner div for the same reason. */
+.resource-list-card .board-panel {
+  padding: 0;
+  overflow: hidden;
+  user-select: text;
+}
+
+.resource-list-body {
+  padding: 1.05rem 1.3rem 1.3rem 1.15rem;
+  border-left: 4px solid var(--type-c, var(--type-fallback));
+}
+
+.resource-list-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  line-height: 1.3;
+  margin: 0 0 0.3rem;
+  color: var(--ink);
+}
+.resource-list-title a {
+  color: var(--ink-link);
+}
+
+.resource-list-source {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0 0 0.55rem;
+}
+
+.resource-list-desc {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink);
+  margin: 0;
+}
+
+.resource-list-note {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.5;
+  font-style: italic;
+  color: var(--ink-soft);
+  border-top: 1px solid var(--border-soft);
+  margin: 0.65rem 0 0;
+  padding-top: 0.55rem;
+}
+
+/* ---- Board spread: main column flanked by fun-fact sidebars ----
+   Some resource-library pages want small "did you know" notes pinned in
+   the margins alongside the main content, the way loose notes collect
+   around the edge of a real corkboard, rather than folded into the
+   graded resource list itself. .board-spread replaces .board-page as
+   the page's outer wrapper (same job clearing the fixed #app-title,
+   just three columns instead of one) - .board-spread-main holds
+   everything .board-page normally would (title-card, resource grid,
+   etc.), while the two fact columns hold a stack of .fact-card notes.
+   DOM order keeps the main column first (a screen reader or keyboard
+   user should hit the actual resources before sidebar trivia); grid-
+   template-areas is what puts it visually in the middle. Below 1180px
+   there isn't room for real margins, so it collapses to one column with
+   the fact notes as a wrapping row above/below the main content. */
+.board-spread {
+  display: grid;
+  grid-template-columns: 1fr min(960px, 100%) 1fr;
+  grid-template-areas: "facts-left main facts-right";
+  column-gap: 1.75rem;
+  max-width: 1500px;
+  margin: 7rem auto 3rem;
+  padding: 0 1.5rem;
+  align-items: start;
+}
+.board-spread-main { grid-area: main; min-width: 0; }
+.board-spread-facts-left { grid-area: facts-left; }
+.board-spread-facts-right { grid-area: facts-right; }
+.board-spread-facts-left, .board-spread-facts-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0.5rem 0 1rem;
+}
+
+.fact-card .board-panel {
+  padding: 0.85rem 1.05rem 1.05rem;
+  user-select: text;
+}
+.fact-card h2 {
+  font-family: var(--font-display);
+  font-size: 14px;
+  line-height: 1.3;
+  margin: 0 0 0.35rem;
+  color: var(--ink);
+}
+.fact-card p {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  margin: 0;
+}
+.fact-card .fact-source {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  font-style: italic;
+  color: var(--ink-soft);
+  opacity: 0.85;
+  margin-top: 0.45rem;
+}
+
+@media (max-width: 1180px) {
+  .board-spread {
+    grid-template-columns: 1fr;
+    grid-template-areas: "main" "facts-left" "facts-right";
+    max-width: 960px;
+  }
+  .board-spread-facts-left, .board-spread-facts-right {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .board-spread-facts-left .fact-card, .board-spread-facts-right .fact-card {
+    flex: 1 1 240px;
+    max-width: 320px;
+  }
+}
+
 @media (max-width: 720px) {
   .resource-page { margin: 5rem 1rem 2rem; padding: 1.5rem 1.25rem; }
   .resource-page h1, .board-panel h1 { font-size: 1.7rem; }
-  .region-grid, .grapes-grid { grid-template-columns: 1fr; }
+  .region-grid, .grapes-grid, .resource-list-grid { grid-template-columns: 1fr; }
+  .board-spread { margin: 6rem auto 2rem; padding: 0 1rem; }
 }
