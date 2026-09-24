@@ -79,41 +79,46 @@ a.board-card:active {
    #app-title (student.css), pin included - PSN pins this same panel with
    its vivid red (#D6483A). Unlike PSN's (a label over an interactive
    canvas, so it deliberately ignored clicks), this is a real link back
-   to the homepage - this is a multi-page site, not a single-page app. */
+   to the homepage - this is a multi-page site, not a single-page app.
+   Now also a full board-card (deckle-clipped .board-panel + a drop-shadow
+   on the unclipped outer <a>), matching every other card on the site,
+   rather than PSN's plainer, unclipped panel-chrome treatment. */
 #app-title {
   position: fixed;
   top: 2rem;
   left: 2rem;
-  background-color: var(--paper);
-  box-shadow: 0 2px 5px var(--shadow-panel);
-  border-radius: 3px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  z-index: 45;
+  transform: rotate(-1.4deg);
+  filter: drop-shadow(0 2px 5px var(--shadow-panel));
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+/* Ease partway toward flat and lift the shadow on hover, press flat-
+   rotation-and-shrunk-shadow on click - same easing as a.board-card. */
+#app-title:hover {
+  transform: rotate(-0.5deg) scale(1.03);
+  filter: drop-shadow(0 4px 8px var(--shadow-panel));
+}
+#app-title:active {
+  transform: rotate(-1.4deg) scale(0.965);
+  filter: drop-shadow(0 1px 2px var(--shadow-panel));
+}
+
+#app-title .board-panel {
+  display: block;
   padding: 0.5rem 0.9rem;
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 22px;
   letter-spacing: 0.01em;
   color: var(--ink);
-  text-decoration: none;
-  cursor: pointer;
-  z-index: 45;
-  transform: rotate(-1.4deg);
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
-}
-/* Same easing as a.board-card: ease partway toward flat and lift the
-   shadow on hover, press flat-rotation-and-shrunk-shadow on click. Plain
-   box-shadow (not drop-shadow) is fine here since #app-title, like PSN's
-   own panel chrome, is never deckle-clipped. */
-#app-title:hover {
-  transform: rotate(-0.5deg) scale(1.03);
-  box-shadow: 0 4px 8px var(--shadow-panel);
-}
-#app-title:active {
-  transform: rotate(-1.4deg) scale(0.965);
-  box-shadow: 0 1px 2px var(--shadow-panel);
 }
 
 @media (max-width: 720px) {
-  #app-title { top: 1rem; left: 1rem; font-size: 18px; }
+  #app-title { top: 1rem; left: 1rem; }
+  #app-title .board-panel { font-size: 18px; }
 }
 
 #main-content {
@@ -156,6 +161,17 @@ a.board-card:active {
   font-family: var(--font-body);
   font-size: 12.5px;
   color: var(--ink-soft);
+}
+
+/* A grid with exactly one card (the homepage today, with one resource)
+   spans and centers it instead of leaving it stranded in the first
+   column with an empty cell beside it. Self-adjusting: add a second
+   card later and this stops matching, no page edit needed. */
+.card-grid > .board-card:only-child,
+.region-grid > .board-card:only-child,
+.grapes-grid > .board-card:only-child {
+  grid-column: 1 / -1;
+  justify-self: center;
 }
 
 @media (max-width: 720px) {
