@@ -92,6 +92,142 @@
 }
 .source-citation a { color: var(--ink-link); font-style: normal; }
 
+/* ---- Leveled reading pages ----
+   A leveled reading is the source text rewritten at a lower reading level
+   (about 800L), pulled onto this site with credit. Two extras sit on top
+   of the plain .source-text excerpt layout above:
+
+   1. .original-link - the external link to the original page goes at the
+      TOP of the reading, with a reminder that photos, maps, and other
+      images live only on the original page.
+   2. Word Help cards - each paragraph that still has hard words gets a
+      .reading-row wrapper: the paragraph in the paper sheet, and a stack
+      of pinned .word-card definitions hanging off the paper's side edge
+      onto the corkboard (alternating right / left, like loose notes). The
+      cards live in a zero-width grid cell that overflows sideways, so the
+      row grows to whichever is taller (paragraph or cards) - cards never
+      drift out of line with their paragraph or pile up on each other.
+      Below 1200px there is no margin room, so each row collapses to the
+      paragraph with its cards as a wrapping strip underneath. */
+.reading-page {
+  --paper-pad: 2.5rem;
+  --card-w: 205px;
+  --card-gap: 20px;
+  max-width: 720px;
+}
+
+.original-link {
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--paper-flat);
+  border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--ink-link);
+  border-radius: 3px;
+  padding: 0.75rem 1rem 0.85rem;
+  margin: 1.1rem 0 1.4rem;
+}
+.original-link .original-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.2rem;
+}
+.original-link a { color: var(--ink-link); font-weight: 700; }
+.original-link p {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin: 0.4rem 0 0;
+}
+.original-link p + p { margin-top: 0.3rem; }
+
+.reading-tip {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin: 0 0 1.25rem;
+}
+
+.source-text h2 { scroll-margin-top: 6rem; }
+
+.vocab {
+  border-bottom: 2px dotted var(--ink-link);
+  padding-bottom: 1px;
+}
+
+.reading-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 0;
+  margin: 0 0 1rem;
+}
+.reading-row > p { grid-column: 1; grid-row: 1; margin: 0; }
+.reading-row > .word-cards { grid-column: 2; grid-row: 1; }
+.reading-row.left { grid-template-columns: 0 minmax(0, 1fr); }
+.reading-row.left > p { grid-column: 2; }
+.reading-row.left > .word-cards { grid-column: 1; }
+
+.word-cards {
+  width: 0;
+  padding: 0.15rem 0 0.35rem;
+}
+.word-card {
+  width: var(--card-w);
+  margin: 0 0 0.65rem calc(var(--paper-pad) + var(--card-gap));
+}
+.reading-row.left .word-card {
+  margin-left: calc(-1 * (var(--paper-pad) + var(--card-gap) + var(--card-w)));
+}
+.word-card .board-panel {
+  padding: 0.65rem 0.8rem 0.72rem;
+  user-select: text;
+}
+.word-card .word-term {
+  font-family: var(--font-display);
+  font-size: 14px;
+  line-height: 1.25;
+  margin: 0 0 0.15rem;
+  color: var(--ink);
+}
+.word-card .word-pos {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--ink-soft);
+  margin-left: 0.25rem;
+}
+.word-card p {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--ink);
+  margin: 0;
+}
+
+@media (max-width: 1200px) {
+  .reading-row, .reading-row.left { grid-template-columns: minmax(0, 1fr); }
+  .reading-row > p, .reading-row.left > p { grid-column: 1; grid-row: 1; }
+  .reading-row > .word-cards, .reading-row.left > .word-cards {
+    grid-column: 1;
+    grid-row: 2;
+    width: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    padding: 0.9rem 0 0.2rem;
+  }
+  .word-card, .reading-row.left .word-card {
+    width: auto;
+    flex: 1 1 190px;
+    max-width: 300px;
+    margin: 0;
+  }
+}
+
 /* ---- Pinned board-card system ----
    Index and region-overview pages drop the single paper-sheet layout
    entirely: every piece of content - the title, the callout, the "start
