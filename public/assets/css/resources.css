@@ -101,14 +101,19 @@
       TOP of the reading, with a reminder that photos, maps, and other
       images live only on the original page.
    2. Word Help cards - each paragraph that still has hard words gets a
-      .reading-row wrapper: the paragraph in the paper sheet, and a stack
-      of pinned .word-card definitions hanging off the paper's side edge
-      onto the corkboard (alternating right / left, like loose notes). The
-      cards live in a zero-width grid cell that overflows sideways, so the
-      row grows to whichever is taller (paragraph or cards) - cards never
-      drift out of line with their paragraph or pile up on each other.
-      Below 1200px there is no margin room, so each row collapses to the
-      paragraph with its cards as a wrapping strip underneath. */
+      .reading-row wrapper holding its pinned .word-card definitions
+      (.word-cards) followed by the paragraph. On wide screens the cards
+      are floated out of the paper sheet into the corkboard margin,
+      alternating right / left like loose notes. The float's margins are
+      set so it takes up zero width in the text flow and - because it is a
+      float - no height either: the paragraphs keep their normal spacing
+      no matter how many definitions sit beside them. `clear` stacks a new
+      group of cards below the previous group on the same side, so cards
+      never overlap; since the sides alternate, a group normally has two
+      paragraphs' worth of room before the next one lands on its side. The
+      cards come first in the DOM so each group lines up with the top of
+      its own paragraph. Below 1200px there is no margin room, so the row
+      becomes a column and the cards wrap in a strip under the paragraph. */
 .reading-page {
   --paper-pad: 2.5rem;
   --card-w: 205px;
@@ -159,27 +164,23 @@
   padding-bottom: 1px;
 }
 
-.reading-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 0;
-  margin: 0 0 1rem;
-}
-.reading-row > p { grid-column: 1; grid-row: 1; margin: 0; }
-.reading-row > .word-cards { grid-column: 2; grid-row: 1; }
-.reading-row.left { grid-template-columns: 0 minmax(0, 1fr); }
-.reading-row.left > p { grid-column: 2; }
-.reading-row.left > .word-cards { grid-column: 1; }
+.reading-row { margin: 0 0 1rem; }
+.reading-row > p { margin: 0; }
 
 .word-cards {
-  width: 0;
-  padding: 0.15rem 0 0.35rem;
+  float: right;
+  clear: right;
+  width: var(--card-w);
+  margin: 0 calc(-1 * (var(--paper-pad) + var(--card-gap) + var(--card-w))) 0 calc(var(--paper-pad) + var(--card-gap));
+}
+.reading-row.left > .word-cards {
+  float: left;
+  clear: left;
+  margin: 0 calc(var(--paper-pad) + var(--card-gap)) 0 calc(-1 * (var(--paper-pad) + var(--card-gap) + var(--card-w)));
 }
 .word-card {
-  width: var(--card-w);
-  margin: 0 0 0.65rem calc(var(--paper-pad) + var(--card-gap));
-}
-.reading-row.left .word-card {
-  margin-left: calc(-1 * (var(--paper-pad) + var(--card-gap) + var(--card-w)));
+  width: 100%;
+  margin: 0 0 0.65rem;
 }
 .word-card .board-panel {
   padding: 0.65rem 0.8rem 0.72rem;
@@ -209,18 +210,19 @@
 }
 
 @media (max-width: 1200px) {
-  .reading-row, .reading-row.left { grid-template-columns: minmax(0, 1fr); }
-  .reading-row > p, .reading-row.left > p { grid-column: 1; grid-row: 1; }
-  .reading-row > .word-cards, .reading-row.left > .word-cards {
-    grid-column: 1;
-    grid-row: 2;
+  .reading-row { display: flex; flex-direction: column; }
+  .reading-row > .word-cards,
+  .reading-row.left > .word-cards {
+    order: 2;
+    float: none;
+    clear: none;
     width: auto;
+    margin: 0.9rem 0 0.2rem;
     display: flex;
     flex-wrap: wrap;
     gap: 0.9rem;
-    padding: 0.9rem 0 0.2rem;
   }
-  .word-card, .reading-row.left .word-card {
+  .word-card {
     width: auto;
     flex: 1 1 190px;
     max-width: 300px;
